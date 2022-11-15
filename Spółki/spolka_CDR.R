@@ -64,6 +64,6 @@ points(dn, 0, pch = 19, col = 2)
 
 p_value <- length(Dn[Dn>dn])/N; p_value
 alpha <- 0.05
-p_value <- alpha
-# Odrzucamy test zgodnosci ?
+p_value >= alpha
+# Odrzucamy test zgodnosci 
 
