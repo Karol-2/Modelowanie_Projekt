@@ -1,4 +1,4 @@
-#dane<- read.csv("//NAS1/home/kkrawczykiewicz/Desktop/modelowanie/cdr_d.csv")
+#ane<- read.csv("//NAS1/home/kkrawczykiewicz/Desktop/modelowanie/Modelowanie_Projekt_1-main/Spółki/cdr_d.csv")
 dane<- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr_d.csv")
 
 
@@ -28,13 +28,13 @@ kurtosis(kurs_zamkniecia)
 # 3
 plot.legend <- c('norm','lognorm','gamma')
 
-estymator_normalny <- fitdist(kurs_zamkniecia,"norm")
+estymator_normalny <- fitdist(kurs_zamkniecia,"norm",method = "mle")
 estymator_normalny
 
-estymator_lognorm <- fitdist(kurs_zamkniecia,"lnorm")
+estymator_lognorm <- fitdist(kurs_zamkniecia,"lnorm",method = "mle")
 estymator_lognorm
 
-estymator_gamma <- fitdist(kurs_zamkniecia,"gamma")
+estymator_gamma <- fitdist(kurs_zamkniecia,"gamma",method = "mle")
 estymator_gamma
 
 # 4
@@ -47,9 +47,11 @@ gofstat(list(estymator_normalny, estymator_lognorm, estymator_gamma),  fitnames 
 
 # 5
 N <- 10000
-n <- 100
+n <- length(kurs_zamkniecia)
 
 Dn <- c()
+
+estymator_lognorm$estimate
 
 for (i in 1:N) {
   Yln <- rlnorm(n, estymator_lognorm$estimate[1], estymator_lognorm$estimate[2])
@@ -59,11 +61,14 @@ for (i in 1:N) {
 
 dn <- ks.test(kurs_zamkniecia, plnorm, estymator_lognorm$estimate[1], estymator_lognorm$estimate[2], exact = TRUE)$statistic
 
-hist(Dn, prob = T)
+hist(Dn, prob = T, xlim=c(0, 0.17))
 points(dn, 0, pch = 19, col = 2)
+dn
 
-p_value <- length(Dn[Dn>dn])/N; p_value
+p_value <- length(Dn[Dn>dn])/N; 
 alpha <- 0.05
 p_value >= alpha
 # Odrzucamy test zgodnosci 
+
+
 
