@@ -1,5 +1,5 @@
 #ane<- read.csv("//NAS1/home/kkrawczykiewicz/Desktop/modelowanie/Modelowanie_Projekt_1-main/Spółki/cdr_d.csv")
-dane<- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr_d.csv")
+dane<- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr_v2.csv")
 
 
 library(ggplot2)
@@ -10,15 +10,14 @@ library(fitdistrplus)
 
 class(dane)
 
-kurs_zamkniecia <- dane$Zamkniecie
+kurs_zamkniecia <- dane$Zamknięcie
 
 par(mfrow = c(1,1))
 
 # 1
-plot(kurs_zamkniecia)
-
-hist(kurs_zamkniecia, prob=TRUE)
-
+plot(kurs_zamkniecia, main="Wykres kursów zamknięcia akcji CD Projekt", xlab="Dzień", ylab="Kurs zamknięcia")
+grid()
+hist(kurs_zamkniecia, prob=TRUE, main="Histogram", xlab="Kurs zamknięcia", ylab="Gestość")
 # 2
 mean(kurs_zamkniecia)
 sd(kurs_zamkniecia)
@@ -37,38 +36,48 @@ estymator_lognorm
 estymator_gamma <- fitdist(kurs_zamkniecia,"gamma",method = "mle")
 estymator_gamma
 
-# 4
+# 
+par(mfrow = c(2,2))
+
 denscomp(list(estymator_normalny,estymator_lognorm,estymator_gamma), legendtext = plot.legend)
 cdfcomp(list(estymator_normalny,estymator_lognorm,estymator_gamma), legend = plot.legend)
 qqcomp(list(estymator_normalny,estymator_lognorm,estymator_gamma), legend = plot.legend)
+ppcomp(list(estymator_normalny,estymator_lognorm,estymator_gamma), legend = plot.legend)
 
-#kryteria wyboru - wychodzi że LOGNORM
+
+
+#kryteria wyboru - wychodzi że LOGNORM -3 ,gamma - 2
 gofstat(list(estymator_normalny, estymator_lognorm, estymator_gamma),  fitnames = plot.legend)
 
 # 5
 N <- 10000
 n <- length(kurs_zamkniecia)
+n
 
-Dn <- c()
+Dln <- c()
 
-estymator_lognorm$estimate
+ meanlog<-estymator_lognorm$estimate[1]
+ sdlog <- estymator_lognorm$estimate[2]
 
 for (i in 1:N) {
-  Yln <- rlnorm(n, estymator_lognorm$estimate[1], estymator_lognorm$estimate[2])
+  Yln <- rlnorm(n, meanlog, sdlog)
   
-  Dn[i] <- ks.test(Yln, plnorm, estymator_lognorm$estimate[1],estymator_lognorm$estimate[2], exact = TRUE)$statistic
+  Dln[i] <- ks.test(Yln, plnorm, meanlog,sdlog, exact = TRUE)$statistic
 }
 
-dn <- ks.test(kurs_zamkniecia, plnorm, estymator_lognorm$estimate[1], estymator_lognorm$estimate[2], exact = TRUE)$statistic
+dn_ln <- ks.test(kurs_zamkniecia, plnorm, meanlog, sdlog, exact = TRUE)$statistic
+dn_ln
 
-hist(Dn, prob = T, xlim=c(0, 0.17))
-points(dn, 0, pch = 19, col = 2)
-dn
+par(mfrow = c(1,1))
 
-p_value <- length(Dn[Dn>dn])/N; 
+hist(Dln, prob = T, xlim=c(0, 0.17))
+points(dn_ln, 0, pch = 19, col = 2)
+
+
+p_value <- length(Dln[Dln>dn_ln])/N; 
+p_value
 alpha <- 0.05
-p_value >= alpha
-# Odrzucamy test zgodnosci 
-
-
+p_value <= alpha
+#Wartosc p-value jest mniejsza od przyjetego poziomu istotnosci
+#Hipoteze o rownosci dystrybuant odrzucamy
 
