@@ -142,8 +142,8 @@ N <- 10000
 n <- length(cena_zamkniecia)
 
 Dw <- c()
-shape <- fw$estimate[1]
-scale <- fw$estimate[2]
+shape <- fw$estimate[1]; shape
+scale <- fw$estimate[2]; scale
 
 for (i in 1:N) {
   Yw <- rweibull(n, shape=shape, scale=scale)
