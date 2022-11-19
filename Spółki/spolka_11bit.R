@@ -1,7 +1,9 @@
-dane <- read.csv("//NAS1/home/pmaszczak/Desktop/Modelowanie_Projekt_1/Spółki/11bit.csv")
+dane <- read.csv("C:/Studia/Modelowanie Matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
 library(moments)
 library(ggplot2)
 library(fitdistrplus)
+library(MASS)
+library(survival)
 
 dane$Data <- as.Date(dane$Data)
 class(dane$Data)
@@ -29,46 +31,49 @@ norm <- fitdist(cena_zamkniecia, "norm"); norm
 
 lnorm <- fitdist(cena_zamkniecia, "lnorm"); lnorm
 
-gamma <- fitdist(cena_zamkniecia, "gamma"); gamma
+weib <- fitdist(cena_zamkniecia, "weibull"); weib
 
 #4
-plot.legend <- c('log-norm', 'norm', 'gamma')
+plot.legend <- c('log-norm', 'norm', 'weibull')
 
 fn <- fitdist(cena_zamkniecia, "norm")
 fln <- fitdist(cena_zamkniecia, "lnorm")
-fg <- fitdist(cena_zamkniecia, "gamma")
+fw <- fitdist(cena_zamkniecia, "weibull")
 
-funkcje <- list(fn, fln, fg)
-legenda = c("normalny","log-normalny","gamma")
+funkcje <- list(fn, fln, fw)
+legenda = c("normalny", "log-normalny", "weibull")
+
+par(mfrow = c(2, 2))
 
 cdfcomp(funkcje, legend = legenda)
 denscomp(funkcje, legend = legenda)
 qqcomp(funkcje, legend = legenda)
 ppcomp(funkcje, legend = legenda)
 gofstat(funkcje, fitnames = legenda)
-# Ceny zamkniecia najlepiej opisuje rozklad log-normalny
+# Ceny zamkniecia najlepiej opisuje rozklad Weibulla
 
+par(mfrow = c(1, 1))
 # 5
 
 N <- 10000
 n <- length(cena_zamkniecia)
 
-Dln <- c()
+Dw <- c()
+shape <- fw$estimate[1]
+scale <- fw$estimate[2]
 
 for (i in 1:N) {
-  Yln <- rlnorm(n, fln$estimate[1], fln$estimate[2])
+  Yw <- rweibull(n, shape=shape, scale=scale)
   
-  Dln[i] <- ks.test(Yln, plnorm, fln$estimate[1],fln$estimate[2], exact = TRUE)$statistic
+  Dw[i] <- ks.test(Yw, pweibull, scale=scale, shape=shape, exact = TRUE)$statistic
 }
 
-dn_ln <- ks.test(cena_zamkniecia, plnorm, fln$estimate[1], fln$estimate[2], exact = TRUE)$statistic
-dn_ln
-# Wartosc statystyki Dln - dn_ln
+dn_w <- ks.test(cena_zamkniecia, pweibull, scale=scale, shape=shape, exact = TRUE)$statistic; dn_w
 
-hist(Dln, prob=T, xlim=c(0, 0.15), ylim=c(0, 40))
-points(dn_ln, 0, pch = 19, col = 2)
+  hist(Dw, prob=T, xlim=c(0, 0.115), ylim=c(0, 40))
+points(dn_w, 0, pch = 19, col = 2)
 
-p_value_ln <- length(Dln[Dln>dn_ln])/N; p_value_ln
+p_value <- length(Dw[Dw>dn_w])/N; p_value
 alpha <- 0.05
-p_value_ln <= alpha
-# Hipoteza odrzucona
+p_value <= alpha
+#Hipoteza o równości rozkładów odrzucona, pvalue < 5%
