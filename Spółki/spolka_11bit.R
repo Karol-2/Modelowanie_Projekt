@@ -13,9 +13,9 @@ cena_zamkniecia <- dane$Zamknięcie
 #1
 par(mfrow = c(1, 1))
 
-plot(cena_zamkniecia, main="Wykres kursow zamkniecia akcji 11bit", xlab="Notowany dzien", ylab="Cena zamkniecia")
-
-hist(cena_zamkniecia, main="Histogram", xlab="Cena zamkniecia", ylab="Gestosc", prob=TRUE)
+plot(cena_zamkniecia, main="Wykres kursów zamknięcia akcji 11 bit studios", xlab="Dzień", ylab="Kurs zamknięcia")
+grid()
+hist(cena_zamkniecia, main="Histogram", xlab="Kurs zamknięcia", ylab="Gęstość", prob=TRUE)
 
 #2
 srednia <- mean(cena_zamkniecia); srednia

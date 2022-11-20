@@ -7,7 +7,7 @@ library(fitdistrplus)
 library(MASS)
 library(survival)
 
-#
+####################################################
 # CDR
 #
 
@@ -84,8 +84,8 @@ p_value <= alpha
 #Wartosc p-value jest mniejsza od przyjetego poziomu istotnosci
 #Hipoteze o rownosci dystrybuant odrzucamy
 
-#
-# 11 Bit
+#####################################################
+# 11 bit
 #
 
 bit11$Data <- as.Date(bit11$Data)
@@ -96,9 +96,9 @@ cena_zamkniecia <- bit11$Zamknięcie
 #1
 par(mfrow = c(1, 1))
 
-plot(cena_zamkniecia, main="Wykres kursow zamkniecia akcji 11bit", xlab="Notowany dzien", ylab="Cena zamkniecia")
-
-hist(cena_zamkniecia, main="Histogram", xlab="Cena zamkniecia", ylab="Gestosc", prob=TRUE)
+plot(cena_zamkniecia, main="Wykres kursów zamknięcia akcji 11 bit studios", xlab="Dzień", ylab="Kurs zamknięcia")
+grid()
+hist(cena_zamkniecia, main="Histogram", xlab="Kurs zamknięcia", ylab="Gęstość", prob=TRUE)
 
 #2
 srednia <- mean(cena_zamkniecia); srednia
