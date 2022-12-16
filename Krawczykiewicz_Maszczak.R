@@ -11,28 +11,23 @@ library(evir)
 dane_CDP<- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
 dane_11B<- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
 
-# DODAĆ KOD Z PIERWSZEJ CZĘŚCI PROJEKTU?
+# DODAĆ KOD Z PIERWSZEJ CZĘŚCI PROJEKTU !!!
 
 # =========================================================
 #                      CZĘŚĆ DRUGA
 # =========================================================
 
-# SPRAWDZIŁBYM CZY TO NA PEWNO DOBRZE LICZY !!!
+
 bit11_zamkniecie <- dane_11B$Zamknięcie
 cdp_zamkniecie <- dane_CDP$Zamknięcie
 
-bit11_dlugosc <- length(bit11_zamkniecie);
-bit11_log_zwroty <- log(bit11_zamkniecie[-1]/bit11_zamkniecie[-bit11_dlugosc])
+diff_bit11<-diff(log(bit11_zamkniecie),lag=1)
+diff_cdp<-diff(log(cdp_zamkniecie),lag=1)
 
-cdp_dlugosc <- length(cdp_zamkniecie);
-cdp_log_zwroty <- log(cdp_zamkniecie[-1]/cdp_zamkniecie[-cdp_dlugosc])
-
-#diff(log(cd_zamkniecie),lag=1) - to się może przydać maybe
-
-df <- data.frame(bit11=bit11_log_zwroty,cdp=cdp_log_zwroty )
+df <- data.frame(bit11=diff_bit11,cdp=diff_cdp )
 
 #--------------------------
-# A
+# A COŚ W TYCH DWÓCH PIERWSZYCH PODPUNKTACH JEST ZJEBANE
 
 # 1. wykres rozrzutu z histogramami rozkładów przegowych
 p <-  ggplot(df, aes(x=bit11, y=cdp)) + geom_point()
@@ -42,9 +37,25 @@ ggMarginal(p, type="histogram")
 mu <- colMeans(df);mu; # wektor średnich  
 Sigma <- cov(df); Sigma; # macierz kowariancji
 P <- cor(df);P; # macierz korelacji
+# czy 0,32 będzie wtedy współczynikiem korelacji?
 
 
-# 3.GĘSTOŚĆ NIE MA !!!
+# 3.GĘSTOŚĆ 
+
+#obliczamy wartosci gestosci na siatce punktow [-x0,x0] x [-y0,y0]
+#rozmiar siatki dobieramy z reguly trzech sigm, dla rozkladu normalnego
+s1 <- s2 <- 1 #odchylenia standardowe 
+x     <- seq(-3*s1, 3*s1, 0.25) 
+y     <- seq(-3*s2, 3*s2, 0.25)
+
+f     <- function(x, y) dmnorm(cbind(x, y), mu, Sigma)  
+z     <- outer(x, y, f)  #sprawdx co oblicza funkcja outer
+
+
+#dokladniejszy wykres
+persp(x, y, z, theta = -30, phi = 25, 
+      shade = 0.75, col = "lightblue", expand = 0.5, r = 2, 
+      ltheta = 25, ticktype = "detailed")
 
 
 #----------------------------
