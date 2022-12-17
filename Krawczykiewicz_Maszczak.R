@@ -6,7 +6,7 @@ library(QRM)
 library(evir)
 
 #dane_CDP<- read.csv("//NAS1/home/kkrawczykiewicz/Desktop/modelowanie/Spółki/cdr.csv")
-#dane_11B<-read.csv("//NAS1/home/kkrawczykiewicz/Desktop/modelowanie/Spółki/11bit.csv")
+#dane_11B<- read.csv("//NAS1/home/kkrawczykiewicz/Desktop/modelowanie/Spółki/11bit.csv")
 
 dane_CDP<- read.csv("C:/Studia/Modelowanie Matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
 dane_11B<- read.csv("C:/Studia/Modelowanie Matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
@@ -23,13 +23,13 @@ df <- data.frame(bit11=diff_bit11,cdp=diff_cdp)
 #--------------------------
 
 
-# 1. wykres rozrzutu z histogramami rozkładów przegowych
+# 1. wykres rozrzutu z histogramami rozkładów brzegowych
 p <-  ggplot(df, aes(x=bit11, y=cdp)) + geom_point()
 ggMarginal(p, type="histogram")
 
 
 
-# 2.
+# 2. Estymatory
 mu <- colMeans(df);mu; # wektor średnich
 covariance <- cov(df$bit11, df$cdp); covariance; # kowariancja
 correlation <- cor(df$bit11, df$cdp); correlation; # współczynnik korelacji
@@ -37,19 +37,13 @@ Sigma <- cov(df); Sigma; # macierz kowariancji
 correlation_matrix <- cor(df); correlation_matrix; # macierz korelacji
 
 
-# 3.GĘSTOŚĆ 
-
-#obliczamy wartosci gestosci na siatce punktow [-x0,x0] x [-y0,y0]
-#rozmiar siatki dobieramy z reguly trzech sigm, dla rozkladu normalnego
-s1 <- s2 <- 1 #odchylenia standardowe 
-x     <- seq(-3*s1, 3*s1, 0.25) 
-y     <- seq(-3*s2, 3*s2, 0.25)
-
+# 3 Wykres gestosci rozkladu
+s1 <- sqrt(Sigma[1])
+s2 <- sqrt(Sigma[4])
+x     <- seq(-3*s1, 3*s1, 0.005) 
+y     <- seq(-3*s2, 3*s2, 0.005)
 f     <- function(x, y) dmnorm(cbind(x, y), mu, Sigma)  
-z     <- outer(x, y, f)  #sprawdx co oblicza funkcja outer
-
-
-#dokladniejszy wykres
+z     <- outer(x, y, f)
 persp(x, y, z, theta = -30, phi = 25, 
       shade = 0.75, col = "lightblue", expand = 0.5, r = 2, 
       ltheta = 25, ticktype = "detailed")
