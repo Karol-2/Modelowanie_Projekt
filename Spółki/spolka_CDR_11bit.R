@@ -45,7 +45,6 @@ par(mfrow = c(2,2))
 denscomp(list(estymator_normalny,estymator_lognorm,estymator_gamma), legendtext = plot.legend)
 cdfcomp(list(estymator_normalny,estymator_lognorm,estymator_gamma), legend = plot.legend)
 qqcomp(list(estymator_normalny,estymator_lognorm,estymator_gamma), legend = plot.legend)
-ppcomp(list(estymator_normalny,estymator_lognorm,estymator_gamma), legend = plot.legend)
 
 
 
@@ -131,7 +130,6 @@ par(mfrow = c(2, 2))
 cdfcomp(funkcje, legend = legenda)
 denscomp(funkcje, legend = legenda)
 qqcomp(funkcje, legend = legenda)
-ppcomp(funkcje, legend = legenda)
 gofstat(funkcje, fitnames = legenda)
 # Ceny zamkniecia najlepiej opisuje rozklad Weibulla
 

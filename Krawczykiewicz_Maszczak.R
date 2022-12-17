@@ -8,14 +8,8 @@ library(evir)
 #dane_CDP<- read.csv("//NAS1/home/kkrawczykiewicz/Desktop/modelowanie/Spółki/cdr.csv")
 #dane_11B<-read.csv("//NAS1/home/kkrawczykiewicz/Desktop/modelowanie/Spółki/11bit.csv")
 
-dane_CDP<- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
-dane_11B<- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
-
-# DODAĆ KOD Z PIERWSZEJ CZĘŚCI PROJEKTU !!!
-
-# =========================================================
-#                      CZĘŚĆ DRUGA
-# =========================================================
+dane_CDP<- read.csv("C:/Studia/Modelowanie Matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
+dane_11B<- read.csv("C:/Studia/Modelowanie Matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
 
 
 bit11_zamkniecie <- dane_11B$Zamknięcie
@@ -24,20 +18,23 @@ cdp_zamkniecie <- dane_CDP$Zamknięcie
 diff_bit11<-diff(log(bit11_zamkniecie),lag=1)
 diff_cdp<-diff(log(cdp_zamkniecie),lag=1)
 
-df <- data.frame(bit11=diff_bit11,cdp=diff_cdp )
+df <- data.frame(bit11=diff_bit11,cdp=diff_cdp)
 
 #--------------------------
-# A COŚ W TYCH DWÓCH PIERWSZYCH PODPUNKTACH JEST ZJEBANE
+
 
 # 1. wykres rozrzutu z histogramami rozkładów przegowych
 p <-  ggplot(df, aes(x=bit11, y=cdp)) + geom_point()
 ggMarginal(p, type="histogram")
 
-# 2. BRAKUJE JEDNEGO!!! - współczynnik korelacji
-mu <- colMeans(df);mu; # wektor średnich  
+
+
+# 2.
+mu <- colMeans(df);mu; # wektor średnich
+covariance <- cov(df$bit11, df$cdp); covariance; # kowariancja
+correlation <- cor(df$bit11, df$cdp); correlation; # współczynnik korelacji
 Sigma <- cov(df); Sigma; # macierz kowariancji
-P <- cor(df);P; # macierz korelacji
-# czy 0,32 będzie wtedy współczynikiem korelacji?
+correlation_matrix <- cor(df); correlation_matrix; # macierz korelacji
 
 
 # 3.GĘSTOŚĆ 

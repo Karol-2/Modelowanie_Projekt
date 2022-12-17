@@ -48,7 +48,6 @@ par(mfrow = c(2, 2))
 cdfcomp(funkcje, legend = legenda)
 denscomp(funkcje, legend = legenda)
 qqcomp(funkcje, legend = legenda)
-ppcomp(funkcje, legend = legenda)
 gofstat(funkcje, fitnames = legenda)
 # Ceny zamkniecia najlepiej opisuje rozklad Weibulla
 
