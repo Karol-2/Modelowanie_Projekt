@@ -6,6 +6,10 @@ library(moments)
 library(fitdistrplus)
 library(MASS)
 library(survival)
+library(ggExtra)
+library(mnormt)
+library(QRM)
+library(evir)
 
 ####################################################
 # CDR
