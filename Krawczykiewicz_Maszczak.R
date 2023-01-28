@@ -264,7 +264,7 @@ prawy_CDR <-  u_CDR + kwantyl * Sn_CDR/sqrt(n) ; prawy_CDR
 #11B
 Xn_11B <- diff_bit11
 u_11B<-mean(Xn_11B) ;u_11B
-Sn_11B <- sd(Xn_11B) ; u_11B
+Sn_11B <- sd(Xn_11B) ; Sn_11B
 n <- length(Xn_11B) ; n
 alfa <- 0.05
 
@@ -283,7 +283,7 @@ df <- data.frame(bit11=diff_bit11,cdp=diff_cdp)
 ggplot(data = df, aes(x = Xn_CDR, y = Xn_11B)) +
   geom_point(colour = "blue", size = 1.5) +
   geom_smooth(method = "lm", se = FALSE, color = "red", size=1) +
-  ggtitle("nazwa wykresu") +
+  ggtitle("Linia regresji") +
   theme(plot.title = element_text(hjust = 0.5))
 
 #wspołczynniki
@@ -292,11 +292,12 @@ model.lm <-lm(Xn_CDR~Xn_11B,data=df)
 model.lm
 
 sum <- summary(model.lm)
+sum
 
-#Obliczamy wartosci statystyki T oraz p-value
+#test istotnosci wspolczynnikow bo, b1
 
-#wspolczynniki modelu 
 coef <- model.lm$coefficients 
+coef
 b0 <- coef[[1]]
 b1 <- coef[[2]]
 b0; b1 
@@ -319,9 +320,38 @@ t0; t1
 2*(1-pt(abs(t0),95))
 2*(1-pt(abs(t1),95))
 
-#warosci p = P(|T|>t0), p = P(|T|>t1) sa mniejsze od 5% zatem hipoteze
-#ze wspolczynniki sa rowne zero, odrzucamy na tym poziomie istotnosci
+#reszty (residuals) 
+reszty <- model.lm$residuals
+#histogram i qq-ploty
+hist(reszty)
 
-# p value t0 =0.5598307 -  hipoteze że ten współczynnik = 0 przyjmujemy
-# p value t1 = 2.205374e-06 - hipoteze że ten współczynnik = 0 odrzucamy
+qqnorm(reszty)
+qqline(reszty,col=2)
+
+m <- mean(reszty)
+s <- sd(reszty)
+m;s
+ks.test(reszty,'pnorm',m,s)
+
+
+#p-value < 5% nie ma podstaw
+#do odrzucenia hipotezy o normalnosci rozkladu reszt
+
+#RSE - blad standardowy reszt
+RSE <- sqrt(sum(reszty^2)/(length(Xn_CDR)-2))
+RSE
+
+# predykcja
+m <- mean(Xn_CDR)
+
+beta0+beta1*m
+
+#przedzialy
+wartosc <- data.frame(Xn_CDR=m)
+#????????????????
+
+predict(model.lm, wartosc, interval="confidence")  
+
+
+
 
