@@ -255,10 +255,10 @@ Sn_CDR <- sd(Xn_CDR) ; Sn_CDR
 n <- length(Xn_CDR) ; n
 alfa <- 0.05
 
-kwantyl_CDR <- qnorm(1-alfa/2, mean = 0, sd = 1) #kwantyl rzedu p rozkladu N(0,1)
+kwantyl <- qnorm(1-alfa/2, mean = 0, sd = 1) #kwantyl rzedu p rozkladu N(0,1)
 
-lewy_CDR <-  u_CDR - kwantyl_CDR * Sn_CDR/sqrt(n) ; lewy_CDR
-prawy_CDR <-  u_CDR + kwantyl_CDR * Sn_CDR/sqrt(n) ; prawy_CDR
+lewy_CDR <-  u_CDR - kwantyl * Sn_CDR/sqrt(n) ; lewy_CDR
+prawy_CDR <-  u_CDR + kwantyl * Sn_CDR/sqrt(n) ; prawy_CDR
 
 
 #11B
@@ -268,12 +268,60 @@ Sn_11B <- sd(Xn_11B) ; u_11B
 n <- length(Xn_11B) ; n
 alfa <- 0.05
 
-kwantyl_11B <- qnorm(1-alfa/2, mean = 0, sd = 1) #kwantyl rzedu p rozkladu N(0,1)
 
-lewy_11B <-  u_11B - kwantyl_11B * Sn_11B/sqrt(n) ; lewy_11B
-prawy_11B <-  u_11B + kwantyl_11B * Sn_11B/sqrt(n) ; prawy_11B
+lewy_11B <-  u_11B - kwantyl * Sn_11B/sqrt(n) ; lewy_11B
+prawy_11B <-  u_11B + kwantyl * Sn_11B/sqrt(n) ; prawy_11B
 
 # B
+#1
+b1 <- cov(Xn_CDR,Xn_11B)/var(Xn_CDR); b1
+b0 <- mean(Xn_CDR)-mean(Xn_11B)*b1; b0
+
+df <- data.frame(bit11=diff_bit11,cdp=diff_cdp)
 
 
+ggplot(data = df, aes(x = Xn_CDR, y = Xn_11B)) +
+  geom_point(colour = "blue", size = 1.5) +
+  geom_smooth(method = "lm", se = FALSE, color = "red", size=1) +
+  ggtitle("nazwa wykresu") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#wspołczynniki
+
+model.lm <-lm(Xn_CDR~Xn_11B,data=df)
+model.lm
+
+sum <- summary(model.lm)
+
+#Obliczamy wartosci statystyki T oraz p-value
+
+#wspolczynniki modelu 
+coef <- model.lm$coefficients 
+b0 <- coef[[1]]
+b1 <- coef[[2]]
+b0; b1 
+
+#odchylenia standardowe estymatorow beta0, beta1
+coef_all <- sum$coefficients
+coef_all 
+
+se.beta0 <- coef_all[1,2]
+se.beta1 <- coef_all[2,2]
+se.beta0; se.beta1
+
+#wartosci statystyki T (t value) 
+t0 <- beta0/se.beta0
+t1 <- beta1/se.beta1
+
+t0; t1
+
+#p-value (p = P(|T|>t0), p = P(|T|>t1))
+2*(1-pt(abs(t0),95))
+2*(1-pt(abs(t1),95))
+
+#warosci p = P(|T|>t0), p = P(|T|>t1) sa mniejsze od 5% zatem hipoteze
+#ze wspolczynniki sa rowne zero, odrzucamy na tym poziomie istotnosci
+
+# p value t0 =0.5598307 -  hipoteze że ten współczynnik = 0 przyjmujemy
+# p value t1 = 2.205374e-06 - hipoteze że ten współczynnik = 0 odrzucamy
 
