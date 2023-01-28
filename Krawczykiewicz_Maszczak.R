@@ -1,5 +1,9 @@
-cdr <- read.csv("C:/Studia/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
-bit11 <- read.csv("C:/Studia/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
+#cdr <- read.csv("C:/Studia/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
+#bit11 <- read.csv("C:/Studia/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
+
+cdr <- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
+bit11 <- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
+
 
 library(ggplot2)
 library(moments)
@@ -238,4 +242,38 @@ plot(q_emp,q_teo,pch=19)
 abline(a=0,b=1,col=2)
 
 ks.test(dM,'pchisq',2)
-# p-value < 5% - odrzucamy
+# p-value < 5% - 
+
+#---------------------------- częśc 3 --------------
+
+# A
+
+#CDR
+Xn_CDR <- diff_cdp; 
+u_CDR<-mean(Xn_CDR) ;u_CDR
+Sn_CDR <- sd(Xn_CDR) ; Sn_CDR
+n <- length(Xn_CDR) ; n
+alfa <- 0.05
+
+kwantyl_CDR <- qnorm(1-alfa/2, mean = 0, sd = 1) #kwantyl rzedu p rozkladu N(0,1)
+
+lewy_CDR <-  u_CDR - kwantyl_CDR * Sn_CDR/sqrt(n) ; lewy_CDR
+prawy_CDR <-  u_CDR + kwantyl_CDR * Sn_CDR/sqrt(n) ; prawy_CDR
+
+
+#11B
+Xn_11B <- diff_bit11
+u_11B<-mean(Xn_11B) ;u_11B
+Sn_11B <- sd(Xn_11B) ; u_11B
+n <- length(Xn_11B) ; n
+alfa <- 0.05
+
+kwantyl_11B <- qnorm(1-alfa/2, mean = 0, sd = 1) #kwantyl rzedu p rozkladu N(0,1)
+
+lewy_11B <-  u_11B - kwantyl_11B * Sn_11B/sqrt(n) ; lewy_11B
+prawy_11B <-  u_11B + kwantyl_11B * Sn_11B/sqrt(n) ; prawy_11B
+
+# B
+
+
+
