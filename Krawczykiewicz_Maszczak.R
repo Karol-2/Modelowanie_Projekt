@@ -244,7 +244,9 @@ abline(a=0,b=1,col=2)
 ks.test(dM,'pchisq',2)
 # p-value < 5% - 
 
-#---------------------------- częśc 3 --------------
+#####################################################
+# Praca 3. Regresja liniowa dla log-zwrotów
+#
 
 # A
 
@@ -268,14 +270,19 @@ Sn_11B <- sd(Xn_11B) ; Sn_11B
 n <- length(Xn_11B) ; n
 alfa <- 0.05
 
-
 lewy_11B <-  u_11B - kwantyl * Sn_11B/sqrt(n) ; lewy_11B
 prawy_11B <-  u_11B + kwantyl * Sn_11B/sqrt(n) ; prawy_11B
 
 # B
 #1
-b1 <- cov(Xn_CDR,Xn_11B)/var(Xn_CDR); b1
-b0 <- mean(Xn_CDR)-mean(Xn_11B)*b1; b0
+
+Y_11B <- diff_bit11
+X_CDR <- diff_cdp; 
+
+
+beta1 <- cov(X_CDR,Y_11B)/var(X_CDR)
+beta0 <- mean(X_CDR)-mean(Y_11B)*beta1
+beta1; beta0
 
 df <- data.frame(bit11=diff_bit11,cdp=diff_cdp)
 
@@ -288,7 +295,7 @@ ggplot(data = df, aes(x = Xn_CDR, y = Xn_11B)) +
 
 #wspołczynniki
 
-model.lm <-lm(Xn_CDR~Xn_11B,data=df)
+model.lm <- lm(Y_11B~X_CDR,data=df)
 model.lm
 
 sum <- summary(model.lm)
@@ -298,9 +305,9 @@ sum
 
 coef <- model.lm$coefficients 
 coef
-b0 <- coef[[1]]
-b1 <- coef[[2]]
-b0; b1 
+beta0 <- coef[[1]]
+beta1 <- coef[[2]]
+beta0; beta1 
 
 #odchylenia standardowe estymatorow beta0, beta1
 coef_all <- sum$coefficients
@@ -322,6 +329,7 @@ t0; t1
 
 #reszty (residuals) 
 reszty <- model.lm$residuals
+
 #histogram i qq-ploty
 hist(reszty)
 
@@ -334,24 +342,37 @@ m;s
 ks.test(reszty,'pnorm',m,s)
 
 
-#p-value < 5% nie ma podstaw
-#do odrzucenia hipotezy o normalnosci rozkladu reszt
+#p-value < 5% nie ma podstaw do odrzucenia hipotezy o normalnosci rozkladu reszt
 
 #RSE - blad standardowy reszt
 RSE <- sqrt(sum(reszty^2)/(length(Xn_CDR)-2))
 RSE
 
-# predykcja
-m <- mean(Xn_CDR)
+#Ponowna regresja i predykcja, przy b0=0
+#=========
 
-beta0+beta1*m
+Y_11B <- diff_bit11
+X_CDR <- diff_cdp; 
 
-#przedzialy
-wartosc <- data.frame(Xn_CDR=m)
-#????????????????
+df <- data.frame(Y_11B=Y_11B,X_CDR=X_CDR)
 
-predict(model.lm, wartosc, interval="confidence")  
+model.lm2 <- lm(Y_11B~X_CDR-1,data=df)
+model.lm2
 
+sum2 <- summary(model.lm2)
+sum2 
 
+#wielkości log-zwrotów spółki 11B, gdy log-zwroty spółki CDR będą na poziomie średniej z posiadanej próby
+m <- mean(X_CDR)
 
+beta1_model2 <- model.lm2$coefficients
 
+beta1_model2*m  #predykcja model 2
+
+#Predykcja i przedzialy ufnosci dla predykcji
+nowa.model <- data.frame(X_CDR=m)
+
+nowa.model;
+model.lm;
+
+predict(model.lm2, nowa.model, interval="confidence") #model 2

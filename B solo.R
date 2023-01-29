@@ -5,9 +5,6 @@ library(boot)
 cdr <- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
 bit11 <- read.csv("D:/Studia/3sem/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
 
-#cdr <- read.csv("C:/Studia/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/cdr.csv")
-#bit11 <- read.csv("C:/Studia/Modelowanie matematyczne/Modelowanie_Projekt_1/Spółki/11bit.csv")
-
 
 kurs_zamkniecia <- cdr$Zamknięcie
 cena_zamkniecia <- bit11$Zamknięcie
@@ -28,11 +25,11 @@ beta0 <- mean(X_CDR)-mean(Y_11B)*beta1
 beta1; beta0
 
 #linia regresji na  wykresie 
-#qplot(X_CDR, Y_11B, data = df,
-  #    main = "Prosta regresji") +
-  #theme(plot.title = element_text(hjust = 0.5)) +
-  #geom_point(colour = "blue", size = 1.5) +
- # #geom_abline(intercept = beta0, slope = beta1, color="red",size=1)
+qplot(X_CDR, Y_11B, data = df,
+      main = "Prosta regresji") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_point(colour = "blue", size = 1.5) +
+  geom_abline(intercept = beta0, slope = beta1, color="red",size=1)
 
 #funkcja 'lm'
 
@@ -94,7 +91,7 @@ m;s
 ks.test(reszty,'pnorm',m,s)
 
 #test Shapiro-Wilka
-#shapiro.test(reszty)
+shapiro.test(reszty)
 
 #p-value=0.1381, na poziomie 5% nie ma podstaw
 #do odrzucenia hipotezy o normalnosci rozkladu reszt
@@ -118,14 +115,13 @@ X_CDR <- diff_cdp;
 
 df <- data.frame(Y_11B=Y_11B,X_CDR=X_CDR)
 
-model.lm2 <- lm(Y_11B~X_CDR-1,data=df) #CHYBA GIT
+model.lm2 <- lm(Y_11B-1~X_CDR,data=df) #CHYBA GIT
 model.lm2 #model 2
-#model.lm  #model 1
+model.lm  #model 1
 
-#sum1 <- summary(model.lm)
+sum1 <- summary(model.lm)
 sum2 <- summary(model.lm2)
-#sum1;
-sum2 
+sum1; sum2 
 
 #Ile waży serce kotka, którego model jest rowna sredniej z badanej probki kotkow?
 m <- mean(X_CDR)
@@ -133,16 +129,23 @@ m <- mean(X_CDR)
 beta1_model2 <- model.lm2$coefficients
 
 beta1_model2*m  #predykcja model 2
-#beta0+beta1*m   #predykcja model 1
+beta0+beta1*m   #predykcja model 1
 
 #Przyklad 1.g (Predykcja i przedzialy ufnosci dla predykcji)
 #=========
 nowa.model <- data.frame(X_CDR=m)
 
-nowa.model;
-model.lm;
-
-#predict(model.lm, nowa.model, interval="confidence")  #model 1
+predict(model.lm, nowa.model, interval="confidence")  #model 1
 predict(model.lm2, nowa.model, interval="confidence") #model 2
+
+
+# porównanie modeli przez chat
+#Oba modele to modele regresji liniowej z jednym zmiennym predykcyjnym, Y_11B. Jedyną różnicą jest to, że pierwszy model zawiera wyraz wolny, podczas gdy drugi model go nie ma (Y_11B - 1 w formule).
+
+#Na podstawie danych wynikowych, współczynniki, wartości t, wartości p, R-kwadrat i statystyka F są bardzo podobne dla obu modeli, co sugeruje, że zawarcie lub brak wyrazu wolnego nie ma istotnego wpływu na wyniki. Dlatego można stwierdzić, że oba modele są równoważne pod względem siły ich związku z zmienną objaśnianą oraz ich zdolności do jej przewidywania.
+
+#Jeśli miałbym wybrać jeden z tych modeli, to powiedziałbym, że drugi model (X_CDR ~ Y_11B - 1) jest nieco lepszy, ponieważ ma nieco wyższą wartość skorygowanego współczynnika R-kwadratu oraz nieco niższy błąd standardowy resztowy. Wartość skorygowanego R-kwadratu wskazuje, jak dobrze model pasuje do danych, biorąc pod uwagę liczbę zmiennych predykcyjnych. Większa wartość oznacza lepsze dopasowanie. Błąd standardowy resztowy mierzy średnią odchylenie reszt (błędy prognozy) od rzeczywistych wartości, a niższa wartość oznacza lepsze dopasowanie.
+
+#Warto zauważyć, że te różnice są bardzo małe i dlatego nie byłyby istotne w praktyce. Wybór modelu do użycia powinien zależeć od konkretnego pytania badawczego i kontekstu, w jakim zbierano dane.
 
 
