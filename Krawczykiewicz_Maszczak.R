@@ -287,11 +287,12 @@ beta1; beta0
 df <- data.frame(bit11=diff_bit11,cdp=diff_cdp)
 
 
-ggplot(data = df, aes(x = Xn_CDR, y = Xn_11B)) +
+ggplot(data = df, aes(x = X_CDR, y = Y_11B)) +
   geom_point(colour = "blue", size = 1.5) +
   geom_smooth(method = "lm", se = FALSE, color = "red", size=1) +
   ggtitle("Linia regresji") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_abline(intercept = beta0, slope = beta1, color="red",size=1)
 
 #wspołczynniki
 
@@ -327,7 +328,7 @@ t0; t1
 2*(1-pt(abs(t0),95))
 2*(1-pt(abs(t1),95))
 
-#reszty (residuals) 
+#reszty 
 reszty <- model.lm$residuals
 
 #histogram i qq-ploty
@@ -344,12 +345,11 @@ ks.test(reszty,'pnorm',m,s)
 
 #p-value < 5% nie ma podstaw do odrzucenia hipotezy o normalnosci rozkladu reszt
 
-#RSE - blad standardowy reszt
+#RSE
 RSE <- sqrt(sum(reszty^2)/(length(Xn_CDR)-2))
 RSE
 
 #Ponowna regresja i predykcja, przy b0=0
-#=========
 
 Y_11B <- diff_bit11
 X_CDR <- diff_cdp; 
@@ -364,8 +364,9 @@ sum2
 
 #wielkości log-zwrotów spółki 11B, gdy log-zwroty spółki CDR będą na poziomie średniej z posiadanej próby
 m <- mean(X_CDR)
-
+m
 beta1_model2 <- model.lm2$coefficients
+beta1_model2
 
 beta1_model2*m  #predykcja model 2
 
@@ -376,3 +377,4 @@ nowa.model;
 model.lm;
 
 predict(model.lm2, nowa.model, interval="confidence") #model 2
+
